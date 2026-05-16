@@ -16,6 +16,8 @@ import { AreaSchedule } from "./AreaSchedule";
 import { AreaTabs, type ActiveTab } from "./AreaTabs";
 import { NowPlaying } from "./NowPlaying";
 import { UpcomingList } from "./UpcomingList";
+import { ProfileMenu, ProfileSetup } from "@/social-intents/ProfileSetup";
+import { useSocialIntents } from "@/social-intents/useSocialIntents";
 
 export function TimetableApp() {
   const [now, setNow] = useState<Date | null>(null);
@@ -23,6 +25,7 @@ export function TimetableApp() {
   const [activeView, setActiveView] = useState<"timetable" | "map">("timetable");
   const [search, setSearch] = useState("");
   const nowMinutes = now ? getCurrentMinutes(now) : -1;
+  const social = useSocialIntents(nowMinutes);
 
   useEffect(() => {
     setNow(new Date());
@@ -66,9 +69,14 @@ export function TimetableApp() {
             <p className="eyebrow">Festival timetable</p>
             <h1>Awakenings Sunday</h1>
           </div>
-          <div className="clock-block">
-            <strong>{now ? formatClock(now) : "--:--"}</strong>
-            {now && isFestivalActive(nowMinutes) ? <span>Now</span> : null}
+          <div className="hero-actions">
+            <div className="clock-block">
+              <strong>{now ? formatClock(now) : "--:--"}</strong>
+              {now && isFestivalActive(nowMinutes) ? <span>Now</span> : null}
+            </div>
+            {social.enabled && social.profile?.displayName ? (
+              <ProfileMenu displayName={social.profile.displayName} onSave={social.saveDisplayName} />
+            ) : null}
           </div>
         </div>
 
@@ -112,8 +120,13 @@ export function TimetableApp() {
 
       {activeView === "timetable" ? (
         <div className="content-stack">
+        {social.enabled && social.profile && !social.profile.displayName ? (
+          <ProfileSetup displayName={social.profile.displayName} onSave={social.saveDisplayName} />
+        ) : null}
+
         <NowPlaying
           items={activeNow}
+          socialIntentsByItemId={social.intentsByItemId}
           emptyMessage={
             beforeFestival
               ? "The first sets start at 13:00."
@@ -123,7 +136,7 @@ export function TimetableApp() {
           }
         />
 
-        <UpcomingList title="Coming up next" items={nextItems} />
+        <UpcomingList title="Coming up next" items={nextItems} socialIntentsByItemId={social.intentsByItemId} />
 
         {activeTab === "all" ? (
           AREAS.map((area) => {
@@ -134,6 +147,12 @@ export function TimetableApp() {
                 area={area}
                 items={items}
                 nowMinutes={nowMinutes}
+                socialIntentsByItemId={social.intentsByItemId}
+                socialIntentsEnabled={social.enabled}
+                canChooseSocialIntent={Boolean(social.profile?.displayName)}
+                isSelectedSocialIntent={social.isSelected}
+                onChooseSocialIntent={social.chooseIntent}
+                onClearSocialIntent={social.clearIntent}
               />
             ) : null;
           })
@@ -142,6 +161,12 @@ export function TimetableApp() {
             area={activeTab}
             items={filteredItems}
             nowMinutes={nowMinutes}
+            socialIntentsByItemId={social.intentsByItemId}
+            socialIntentsEnabled={social.enabled}
+            canChooseSocialIntent={Boolean(social.profile?.displayName)}
+            isSelectedSocialIntent={social.isSelected}
+            onChooseSocialIntent={social.chooseIntent}
+            onClearSocialIntent={social.clearIntent}
           />
         )}
         </div>
