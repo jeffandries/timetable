@@ -18,6 +18,7 @@ import { NowPlaying } from "./NowPlaying";
 import { UpcomingList } from "./UpcomingList";
 import { ProfileMenu, ProfileSetup } from "@/social-intents/ProfileSetup";
 import { useSocialIntents } from "@/social-intents/useSocialIntents";
+import { SocialIntentToast } from "@/social-intents/SocialIntentToast";
 
 export function TimetableApp() {
   const [now, setNow] = useState<Date | null>(null);
@@ -189,6 +190,7 @@ export function TimetableApp() {
           <img src="/map.jpg" alt="Awakenings Sunday festival map" />
         </section>
       )}
+      {social.enabled && social.showSinglePlanToast ? <SocialIntentToast /> : null}
     </main>
   );
 }

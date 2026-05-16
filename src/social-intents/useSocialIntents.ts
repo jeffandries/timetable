@@ -9,6 +9,7 @@ import { getIntentItemId, intentMatchesItem, isIntentVisible } from "./utils";
 
 const USER_ID_KEY = "festival-social-user-id";
 const DISPLAY_NAME_KEY = "festival-social-display-name";
+const SINGLE_PLAN_TOAST_SEEN_KEY = "festival-social-single-plan-toast-seen";
 
 function createUserId() {
   return globalThis.crypto?.randomUUID?.() ?? `festival-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -18,6 +19,7 @@ export function useSocialIntents(nowMinutes: number) {
   const [profile, setProfile] = useState<SocialProfile | null>(null);
   const [intents, setIntents] = useState<FestivalIntent[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showSinglePlanToast, setShowSinglePlanToast] = useState(false);
 
   useEffect(() => {
     if (!socialIntentsEnabled) return;
@@ -87,6 +89,11 @@ export function useSocialIntents(nowMinutes: number) {
 
       setIntents((current) => [...current.filter((intent) => intent.user_id !== profile.userId), nextIntent]);
 
+      if (!window.localStorage.getItem(SINGLE_PLAN_TOAST_SEEN_KEY)) {
+        window.localStorage.setItem(SINGLE_PLAN_TOAST_SEEN_KEY, "true");
+        setShowSinglePlanToast(true);
+      }
+
       try {
         const saved = await upsertCurrentUserIntent(nextIntent);
         setIntents((current) => [...current.filter((intent) => intent.user_id !== profile.userId), saved]);
@@ -97,6 +104,13 @@ export function useSocialIntents(nowMinutes: number) {
     },
     [profile, refresh],
   );
+
+  useEffect(() => {
+    if (!showSinglePlanToast) return;
+
+    const timeout = window.setTimeout(() => setShowSinglePlanToast(false), 4_500);
+    return () => window.clearTimeout(timeout);
+  }, [showSinglePlanToast]);
 
   const clearIntent = useCallback(async () => {
     if (!socialIntentsEnabled || !profile) return;
@@ -139,6 +153,7 @@ export function useSocialIntents(nowMinutes: number) {
     profile,
     intentsByItemId,
     currentIntent,
+    showSinglePlanToast,
     saveDisplayName,
     chooseIntent,
     clearIntent,
