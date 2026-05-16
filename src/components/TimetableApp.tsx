@@ -127,6 +127,11 @@ export function TimetableApp() {
         <NowPlaying
           items={activeNow}
           socialIntentsByItemId={social.intentsByItemId}
+          socialIntentsEnabled={social.enabled}
+          canChooseSocialIntent={Boolean(social.profile?.displayName)}
+          isSelectedSocialIntent={social.isSelected}
+          onChooseSocialIntent={social.chooseIntent}
+          onClearSocialIntent={social.clearIntent}
           emptyMessage={
             beforeFestival
               ? "The first sets start at 13:00."
@@ -136,7 +141,16 @@ export function TimetableApp() {
           }
         />
 
-        <UpcomingList title="Coming up next" items={nextItems} socialIntentsByItemId={social.intentsByItemId} />
+        <UpcomingList
+          title="Coming up next"
+          items={nextItems}
+          socialIntentsByItemId={social.intentsByItemId}
+          socialIntentsEnabled={social.enabled}
+          canChooseSocialIntent={Boolean(social.profile?.displayName)}
+          isSelectedSocialIntent={social.isSelected}
+          onChooseSocialIntent={social.chooseIntent}
+          onClearSocialIntent={social.clearIntent}
+        />
 
         {activeTab === "all" ? (
           AREAS.map((area) => {

@@ -9,10 +9,20 @@ export function NowPlaying({
   items,
   emptyMessage,
   socialIntentsByItemId = {},
+  socialIntentsEnabled = false,
+  canChooseSocialIntent = false,
+  isSelectedSocialIntent,
+  onChooseSocialIntent,
+  onClearSocialIntent,
 }: {
   items: TimetableItem[];
   emptyMessage?: string;
   socialIntentsByItemId?: Record<string, FestivalIntent[]>;
+  socialIntentsEnabled?: boolean;
+  canChooseSocialIntent?: boolean;
+  isSelectedSocialIntent?: (item: TimetableItem) => boolean;
+  onChooseSocialIntent?: (item: TimetableItem) => void;
+  onClearSocialIntent?: () => void;
 }) {
   return (
     <section className="summary-section">
@@ -30,6 +40,11 @@ export function NowPlaying({
                 item={item}
                 state="now"
                 socialIntents={socialIntentsByItemId[itemId] ?? []}
+                showSocialActions={socialIntentsEnabled}
+                canChooseSocialIntent={canChooseSocialIntent}
+                isSelectedSocialIntent={isSelectedSocialIntent?.(item)}
+                onChooseSocialIntent={onChooseSocialIntent}
+                onClearSocialIntent={onClearSocialIntent}
               />
             );
           })}
