@@ -136,28 +136,6 @@ h1 {
   background: var(--surface);
 }
 
-.preview-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.8rem;
-}
-
-.preview-button {
-  min-height: 2rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
-  padding: 0.42rem 0.7rem;
-  font-size: 0.76rem;
-}
-
-.preview-button.is-active {
-  border-color: rgba(215, 255, 63, 0.4);
-  background: var(--accent-soft);
-  color: var(--text);
-}
-
 .search-field {
   display: block;
   margin-top: 1rem;

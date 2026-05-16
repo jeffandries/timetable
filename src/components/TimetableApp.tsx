@@ -21,10 +21,8 @@ export function TimetableApp() {
   const [now, setNow] = useState<Date | null>(null);
   const [activeTab, setActiveTab] = useState<ActiveTab>("all");
   const [activeView, setActiveView] = useState<"timetable" | "map">("timetable");
-  const [previewTime, setPreviewTime] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const liveMinutes = now ? getCurrentMinutes(now) : -1;
-  const nowMinutes = previewTime ? toMinutes(previewTime) : liveMinutes;
+  const nowMinutes = now ? getCurrentMinutes(now) : -1;
 
   useEffect(() => {
     setNow(new Date());
@@ -69,8 +67,8 @@ export function TimetableApp() {
             <h1>Awakenings Sunday</h1>
           </div>
           <div className="clock-block">
-            <strong>{previewTime ?? (now ? formatClock(now) : "--:--")}</strong>
-            {now && isFestivalActive(nowMinutes) ? <span>{previewTime ? "Preview" : "Now"}</span> : null}
+            <strong>{now ? formatClock(now) : "--:--"}</strong>
+            {now && isFestivalActive(nowMinutes) ? <span>Now</span> : null}
           </div>
         </div>
 
@@ -97,16 +95,6 @@ export function TimetableApp() {
 
         {activeView === "timetable" ? (
           <>
-            <div className="preview-row">
-          <button
-            type="button"
-            className={`preview-button ${previewTime ? "is-active" : ""}`}
-            onClick={() => setPreviewTime((current) => (current ? null : "15:00"))}
-          >
-            {previewTime ? "Back to live time" : "Preview 15:00"}
-          </button>
-        </div>
-
             <label className="search-field">
           <span className="sr-only">Search artists</span>
           <input
